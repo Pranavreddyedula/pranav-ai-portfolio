@@ -80,9 +80,42 @@ async function loadRepos(){try{const res=await fetch('https://api.github.com/use
 async function renderRepos(list){repoContainer.innerHTML='';for(const r of list){if(r.fork)continue;const c=document.createElement('div');c.className='card';let desc=r.description||`Built using ${r.language||'various technologies'}`;c.innerHTML=`<h3>${r.name}</h3><p>${desc}</p><a href="${r.html_url}" target="_blank">View Source Code</a>`;repoContainer.appendChild(c);}repoStatus.textContent='Projects synced with GitHub';}
 loadRepos();
 
-// speech assistant
-function speak(t){speech.style.display='block';speech.textContent=t;speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t));}
-listenBtn.onclick=()=>speak('Say skills, projects or contact after microphone permission');
+// ===== AI ASSISTANT (FIXED) =====
+function speak(t){speech.style.display='block';speech.textContent=t;window.speechSynthesis.cancel();window.speechSynthesis.speak(new SpeechSynthesisUtterance(t));}
+
+// check browser support
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SpeechRecognition){
+  listenBtn.innerText='❌ Voice Not Supported';
+  listenBtn.disabled=true;
+  console.log('SpeechRecognition not supported in this browser');
+}else{
+  const recognition=new SpeechRecognition();
+  recognition.lang='en-US';
+  recognition.interimResults=false;
+  recognition.maxAlternatives=1;
+
+  listenBtn.onclick=()=>{
+    speak('Listening... please speak');
+    try{recognition.start();}
+    catch(e){console.log('mic start error',e);}
+  };
+
+  recognition.onresult=(event)=>{
+    const cmd=event.results[0][0].transcript.toLowerCase();
+    console.log('voice:',cmd);
+    speak('You said '+cmd);
+    if(cmd.includes('skills')) scrollToSection('skills');
+    else if(cmd.includes('projects')) scrollToSection('projects');
+    else if(cmd.includes('contact')) scrollToSection('contact');
+    else speak('Command not recognized');
+  };
+
+  recognition.onerror=(e)=>{
+    console.log('speech error',e);
+    speak('Microphone blocked or permission denied. Please allow microphone and reload.');
+  };
+}
 </script>
 </body>
 </html>
