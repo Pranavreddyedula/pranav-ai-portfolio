@@ -5,117 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Pranav Reddy | AI Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:'Poppins',sans-serif;background:#030712;color:white;overflow-x:hidden}
-canvas{position:fixed;top:0;left:0;z-index:-1;pointer-events:none}
-nav{position:fixed;top:0;width:100%;display:flex;justify-content:center;gap:20px;padding:18px;background:rgba(0,0,0,.35);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
-nav button{background:linear-gradient(135deg,#00eaff,#0077ff);border:none;padding:10px 20px;border-radius:30px;font-weight:600;color:#001;cursor:pointer;transition:.3s}
-nav button:hover{transform:translateY(-2px);box-shadow:0 0 15px #00eaff}
-section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 20px}
-h1{font-size:3rem;margin:0;background:linear-gradient(90deg,#00eaff,#8a2be2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-h2{font-size:2rem;margin-bottom:20px}
-.glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(15px);border-radius:20px;padding:25px}
-.projects{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;width:100%;max-width:1100px}
-.card{padding:25px;border-radius:20px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);transition:.35s;position:relative;overflow:hidden}
-.card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 0 25px rgba(0,234,255,.35)}
-.card h3{margin-top:0;color:#00eaff}
-.card p{opacity:.85;font-size:.95rem;min-height:50px}
-.card a{display:inline-block;margin-top:12px;padding:10px 16px;border-radius:25px;background:linear-gradient(135deg,#00eaff,#0077ff);color:#001;text-decoration:none;font-weight:600}
-.skill-orbit{display:flex;gap:25px;flex-wrap:wrap;justify-content:center}
-.skill{padding:18px 26px;border-radius:40px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);animation:float 4s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-#avatar{position:fixed;bottom:30px;right:30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#00eaff,#002);display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;box-shadow:0 0 30px #00eaff}
-#listenBtn{position:fixed;bottom:30px;right:140px;padding:12px 20px;border-radius:30px;background:linear-gradient(135deg,#00eaff,#0077ff);border:none;font-weight:600;color:#001;cursor:pointer}
-#speech{position:fixed;bottom:140px;right:30px;background:rgba(0,0,0,.7);padding:15px 18px;border-radius:15px;max-width:260px;display:none;border:1px solid rgba(255,255,255,.15)}
-.status{opacity:.7;margin-top:15px}
-</style>
-</head>
-<body>
-<canvas id="bg"></canvas>
-<div id="avatar">🤖</div>
-<button id="listenBtn">🎤 Talk</button>
-<div id="speech"></div>
-<nav>
-<button onclick="scrollToSection('home')">Home</button>
-<button onclick="scrollToSection('skills')">Skills</button>
-<button onclick="scrollToSection('projects')">Projects</button>
-<button onclick="scrollToSection('contact')">Contact</button>
-</nav>
-<section id="home">
-<h1>Edula Sai Pranav Reddy</h1>
-<p class="glass">AI‑Powered Interactive Developer Portfolio</p>
-</section>
-<section id="skills">
-<h2>Skills</h2>
-<div class="skill-orbit">
-<div class="skill">Python</div>
-<div class="skill">Java</div>
-<div class="skill">C</div>
-<div class="skill">HTML</div>
-<div class="skill">CSS</div>
-</div>
-</section>
-<section id="projects">
-<h2>GitHub Projects</h2>
-<div id="repoContainer" class="projects"></div>
-<p id="repoStatus" class="status">Loading projects...</p>
-</section>
-<section id="contact">
-<h2>Contact</h2>
-<div class="glass">
-<p>Email: edulapranav@gmail.com</p>
-</div>
-</section>
-<script>
-function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js">// ===== CHAT MODE (OFFLINE Q&A) =====
+const chatBox=document.createElement('div');
+chatBox.style.position='fixed';chatBox.style.bottom='30px';chatBox.style.left='30px';chatBox.style.width='280px';chatBox.style.background='rgba(0,0,0,.7)';chatBox.style.border='1px solid rgba(255,255,255,.2)';chatBox.style.borderRadius='15px';chatBox.style.padding='12px';chatBox.style.fontSize='14px';chatBox.innerHTML=`<div style="margin-bottom:6px;font-weight:600">Ask about Pranav</div><input id='chatInput' placeholder='Ask something...' style='width:100%;padding:8px;border-radius:10px;border:none;margin-top:6px'>`;
+document.body.appendChild(chatBox);
 
-// background stars
-const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);const renderer=new THREE.WebGLRenderer({canvas:bg,alpha:true});renderer.setSize(innerWidth,innerHeight);const geo=new THREE.BufferGeometry();const arr=new Float32Array(3000*3);for(let i=0;i<arr.length;i++)arr[i]=(Math.random()-0.5)*800;geo.setAttribute('position',new THREE.BufferAttribute(arr,3));const stars=new THREE.Points(geo,new THREE.PointsMaterial({color:0x00eaff,size:1}));scene.add(stars);camera.position.z=5;(function a(){requestAnimationFrame(a);stars.rotation.y+=0.0004;renderer.render(scene,camera)})();
+const answers={
+  'who are you':'I am Edula Sai Pranav Reddy, a Computer Science Engineer passionate about development and data analysis.',
+  'skills':'Python, Java, C, HTML and CSS with project based learning experience.',
+  'education':'B.Tech Computer Science Engineering student.',
+  'projects':'You can explore all projects in the projects section synced from GitHub.',
+  'contact':'You can contact via email: edulapranav@gmail.com'
+};
 
-// github loader
-let ALL_REPOS=[];
-async function loadRepos(){try{const res=await fetch('https://api.github.com/users/Pranavreddyedula/repos?per_page=100&sort=updated');ALL_REPOS=await res.json();renderRepos(ALL_REPOS);}catch{repoStatus.textContent='Cannot load projects';}}
-async function renderRepos(list){repoContainer.innerHTML='';for(const r of list){if(r.fork)continue;const c=document.createElement('div');c.className='card';let desc=r.description||`Built using ${r.language||'various technologies'}`;c.innerHTML=`<h3>${r.name}</h3><p>${desc}</p><a href="${r.html_url}" target="_blank">View Source Code</a>`;repoContainer.appendChild(c);}repoStatus.textContent='Projects synced with GitHub';}
-loadRepos();
-
-// ===== AI ASSISTANT (FIXED) =====
-function speak(t){speech.style.display='block';speech.textContent=t;window.speechSynthesis.cancel();window.speechSynthesis.speak(new SpeechSynthesisUtterance(t));}
-
-// check browser support
-const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!SpeechRecognition){
-  listenBtn.innerText='❌ Voice Not Supported';
-  listenBtn.disabled=true;
-  console.log('SpeechRecognition not supported in this browser');
-}else{
-  const recognition=new SpeechRecognition();
-  recognition.lang='en-US';
-  recognition.interimResults=false;
-  recognition.maxAlternatives=1;
-
-  listenBtn.onclick=()=>{
-    speak('Listening... please speak');
-    try{recognition.start();}
-    catch(e){console.log('mic start error',e);}
-  };
-
-  recognition.onresult=(event)=>{
-    const cmd=event.results[0][0].transcript.toLowerCase();
-    console.log('voice:',cmd);
-    speak('You said '+cmd);
-    if(cmd.includes('skills')) scrollToSection('skills');
-    else if(cmd.includes('projects')) scrollToSection('projects');
-    else if(cmd.includes('contact')) scrollToSection('contact');
-    else speak('Command not recognized');
-  };
-
-  recognition.onerror=(e)=>{
-    console.log('speech error',e);
-    speak('Microphone blocked or permission denied. Please allow microphone and reload.');
-  };
-}
+document.getElementById('chatInput').addEventListener('keydown',e=>{
+ if(e.key==='Enter'){
+  const q=e.target.value.toLowerCase();
+  let reply='I am still learning that. Please check projects section.';
+  Object.keys(answers).forEach(k=>{if(q.includes(k))reply=answers[k];});
+  speak(reply);
+  e.target.value='';
+ }
+});
 </script>
 </body>
 </html>
